@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
-
-class Modal extends Component {
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+class ModalComponent extends Component {
     constructor(props) {
         super(props);
         this.handleSave = this.handleSave.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
+        this.titleHandler = this.titleHandler.bind(this);
+        this.msgHandler = this.msgHandler.bind(this);
+        this.commentHandler = this.commentHandler.bind(this);
+        this.vueHandler = this.vueHandler.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.toggle = this.toggle.bind(this);
         this.state = {
             newRow:'',
             index:'',
@@ -12,6 +18,7 @@ class Modal extends Component {
             msg: '',
             comment:'',
             vue:'',
+            modal: false
         }
     }
 
@@ -23,6 +30,7 @@ class Modal extends Component {
             msg: nextProps.msg,
             comment: nextProps.comment,
             vue: nextProps.vue,
+            modal: true
         });
     }
 
@@ -40,7 +48,7 @@ class Modal extends Component {
         this.setState({ vue: e.target.value });
     }
 
-    handleSave() { 
+    handleSave() {
         let row = {};
         row["title"] = this.state.title;
         row["msg"] = this.state.msg;
@@ -53,34 +61,69 @@ class Modal extends Component {
       const item = this.state;
       this.props.deleteItem(item.index)
     }
+    handleSubmit(event) {
+      event.preventDefault();
+      const form = {
+        name: this.state.title,
+        team: this.state.msg,
+        country: this.state.comment,
+        vue :this.state.vue
+      }
+      //this.props.saveModalDetails(form)
+      console.log(form);
+      this.setState({
+         modal: !this.state.modal
+       });
+       this.props.saveModalDetails(form)
+      //let uri = 'http://localhost:8000/api/formmodal';
+    //  axios.post(uri, form).then((response) => {
 
-
+  //    });
+    }
+    toggle() {
+      this.setState({
+        modal: !this.state.modal
+      });
+    }
     render() {
         return (
-            <div className="modal fade" id="exampleModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Edit Row</h5>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <p><span className="modal-lable">Title:</span><input value={this.state.title} onChange={(e) => this.titleHandler(e)} /></p>
-                            <p><span className="modal-lable">Msg:</span><input value={this.state.msg} onChange={(e) => this.msgHandler(e)} /></p>
-                            <p><span className="modal-lable"> Com: </span><input value={this.state.vue} onChange={(e) => this.vueHandler(e)} /></p>
-                            <p><span className="modal-lable">Vue:</span><input value={this.state.comment} onChange={(e) => this.commentHandler(e)} /></p>
-                        </div>
-                        <div className="modal-footer">
-                           <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => { this.handleSave() }}>Save </button>
-                           <button type="button" className="btn btn-danger" data-dismiss="modal" onClick={() => { this.handleDelete() }}>Delete</button>
-                        </div>
-                    </div>
+        <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+          <form onSubmit={this.handleSubmit}>
+            <ModalHeader>IPL 2018</ModalHeader>
+            <ModalBody>
+            <div className="row">
+              <div className="form-group col-md-4">
+              <label>Title:</label>
+              <input type="text" value={this.state.title} onChange={this.titleHandler} className="form-control" />
                 </div>
-            </div>
+                </div>
+              <div className="row">
+               <div className="form-group col-md-4">
+              <label>Message:</label>
+                  <input type="text" value={this.state.msg} onChange={this.msgHandler} className="form-control" />
+                 </div>
+                </div>
+              <div className="row">
+               <div className="form-group col-md-4">
+                <label>Comment:</label>
+                  <input type="text" value={this.state.comment} onChange={this.commentHandler} className="form-control" />
+                 </div>
+                </div>
+                <div className="row">
+                 <div className="form-group col-md-4">
+                  <label>Vue:</label>
+                    <input type="text" value={this.state.vue} onChange={this.vueHandler} className="form-control" />
+                   </div>
+                  </div>
+            </ModalBody>
+            <ModalFooter>
+              <input type="submit" value="Submit" color="primary" className="btn btn-primary" />
+              <Button color="danger" onClick={this.toggle}>Cancel</Button>
+            </ModalFooter>
+            </form>
+      </Modal>
         );
     }
 }
 
-export default Modal;
+export default ModalComponent;

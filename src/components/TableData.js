@@ -9,10 +9,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
 import Paper from '@material-ui/core/Paper';
-import ModalComponent from './modal.js';
+import Modal from './modal.js';
 import TableData from './TableData'
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-
 
 const styles = theme => ({
   root: {
@@ -40,15 +38,8 @@ class List extends Component {
     this.saveModalDetails = this.saveModalDetails.bind(this);
     this.addNew = this.addNew.bind(this);
     this.deleteItem = this.deleteItem.bind(this);
-    this.titleHandler = this.titleHandler.bind(this);
-    this.msgHandler = this.msgHandler.bind(this);
-    this.commentHandler = this.commentHandler.bind(this);
-    this.vueHandler = this.vueHandler.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.toggle = this.toggle.bind(this);
     this.state = {
       requiredItem: 0,
-      modal: false,
       newRow :false,
       modalData:{
         index:"",
@@ -107,21 +98,6 @@ class List extends Component {
     console.log(this.props.modal)
   }
 
-  handleSubmit(event) {
-    event.preventDefault();
-    const form = {
-      title: this.state.modalData.title,
-      msg: this.state.modalData.msg,
-      comment: this.state.modalData.comment,
-      vue :this.state.modalData.vue
-    }
-    console.log(form);
-    this.saveModalDetails(form)
-    this.setState({
-       modal: !this.state.modal
-     });
-  }
-
   deleteItem(index) {
     let tempBrochure = this.state.brochure;
     tempBrochure.splice(index, 1);
@@ -133,7 +109,6 @@ class List extends Component {
     //this.state.modalData = this.state.brochure[index];
     this.setState({
       newRow:false,
-      modal: !this.state.modal,
       modalData:{
         index: index,
         title: this.state.brochure[index].title,
@@ -145,12 +120,9 @@ class List extends Component {
     });
   }
 
-
-
   addNew() {
         this.setState({
             newRow: true,
-            modal: !this.state.modal,
             modalData:{
               index:"",
               title: "",
@@ -160,29 +132,11 @@ class List extends Component {
             }
         });
     }
-    titleHandler(e) {
-        this.setState({ modalData: {title: e.target.value }});
-    }
-
-    msgHandler(e) {
-        this.setState({ modalData: {msg: e.target.value }});
-    }
-    commentHandler(e) {
-        this.setState({ modalData: {comment: e.target.value }});
-    }
-    vueHandler(e) {
-        this.setState({ modalData: {vue: e.target.value }});
-    }
-    toggle() {
-      this.setState({
-        modal: !this.state.modal
-      });
-    }
 
   render() {
     const brochure = this.state.brochure.map((item, index) => {
       return (
-        <TableRow key={index} onClick={() =>this.replaceModalItem(index)} >
+        <TableRow key={index} onClick={() =>this.replaceModalItem(index)} data-toggle="modal" data-target="#exampleModal">
           <TableCell>{item.title}</TableCell>
           <TableCell>{item.msg}</TableCell>
           <TableCell>{item.comment}</TableCell>
@@ -202,7 +156,7 @@ class List extends Component {
           <Typography variant="title" id="tableTitle">
             Nutrition
           </Typography>
-           <button type="button" className="btn btn-primary"  onClick={this.addNew}>Add </button>
+           <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#exampleModal" onClick={this.addNew}>Add </button>
        </div>
         </Toolbar>
         <Table >
@@ -218,41 +172,16 @@ class List extends Component {
             {brochure}
           </TableBody>
         </Table>
-        <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-          <form onSubmit={this.handleSubmit}>
-            <ModalHeader>IPL 2018</ModalHeader>
-            <ModalBody>
-            <div className="row">
-              <div className="form-group col-md-4">
-              <label>Title:</label>
-              <input type="text" value={this.state.modalData.title} onChange={this.titleHandler} className="form-control" />
-                </div>
-                </div>
-              <div className="row">
-               <div className="form-group col-md-4">
-              <label>Message:</label>
-                  <input type="text" value={this.state.modalData.msg} onChange={this.msgHandler} className="form-control" />
-                 </div>
-                </div>
-              <div className="row">
-               <div className="form-group col-md-4">
-                <label>Comment:</label>
-                  <input type="text" value={this.state.modalData.comment} onChange={this.commentHandler} className="form-control" />
-                 </div>
-                </div>
-                <div className="row">
-                 <div className="form-group col-md-4">
-                  <label>Vue:</label>
-                    <input type="text" value={this.state.modalData.vue} onChange={this.vueHandler} className="form-control" />
-                   </div>
-                  </div>
-            </ModalBody>
-            <ModalFooter>
-              <input type="submit" value="Submit" color="primary" className="btn btn-primary" />
-              <Button color="danger" onClick={this.toggle}>Cancel</Button>
-            </ModalFooter>
-            </form>
-      </Modal>
+        <Modal
+          newRow = {this.state.newRow}
+          index={this.state.modalData.index}
+          title={this.state.modalData.title}
+          msg={this.state.modalData.msg}
+          comment={this.state.modalData.comment}
+          vue={this.state.modalData.vue}
+          saveModalDetails={this.saveModalDetails}
+          deleteItem={this.deleteItem}
+        />
       </div>
     );
   }
